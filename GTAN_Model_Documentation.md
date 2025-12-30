@@ -181,6 +181,72 @@ for column in ["Source", "Target", "Location", "Type"]:
 
 > **GTAN is essentially RGTAN without the Risk-aware Neighbor Statistics module.**
 
+### 3.1 Understanding Attention Heads: GTAN vs RGTAN
+
+Both models use attention in different ways:
+
+**GTAN Architecture:**
+```
+TransformerConv Layer 1: 4 attention heads
+TransformerConv Layer 2: 4 attention heads
+─────────────────────────────────────────
+Total: 8 attention heads (only in GNN layers)
+```
+
+**RGTAN Architecture:**
+```
+Neighbor Stats Processing: 9 attention heads (EXTRA!)
+TransformerConv Layer 1:  4 attention heads
+TransformerConv Layer 2:  4 attention heads
+─────────────────────────────────────────────────────
+Total: 17 attention heads
+```
+
+#### What Each Attention Does:
+
+| Attention Type | GTAN | RGTAN | Purpose |
+|---------------|------|-------|---------|
+| **TransformerConv (4 heads)** | ✅ | ✅ | Learn from graph neighbors |
+| **Neighbor Stats (9 heads)** | ❌ | ✅ | Process 6 risk statistics |
+
+#### TransformerConv Attention (Both Models):
+```
+"Which of my connected transactions should I pay attention to?"
+
+Node A in graph:
+     [B] ← attention weight 0.5
+      ↑
+[A] ─→ [C] ← attention weight 0.3
+      ↓
+     [D] ← attention weight 0.2
+```
+
+#### Neighbor Stats Attention (RGTAN Only):
+```
+"Which neighbor statistics should I focus on?"
+
+6 Stats: [degree, riskstat, 1hop_deg, 2hop_deg, 1hop_risk, 2hop_risk]
+
+9 attention heads = 9 "experts" analyzing these stats:
+  Head 1: "degree + riskstat are most important!"
+  Head 2: "2hop_riskstat matters most!"
+  ...
+  Head 9: "All stats together matter!"
+```
+
+#### Why GTAN Has Fewer Attention Heads:
+
+```
+GTAN:  8 heads (4+4 in GNN only)
+       └── Learns neighbor patterns IMPLICITLY through graph structure
+
+RGTAN: 17 heads (9+4+4)
+       └── 9 heads EXPLICITLY analyze neighbor risk statistics
+       └── 4+4 heads learn from graph (same as GTAN)
+```
+
+**Key Insight:** GTAN relies entirely on the GNN to learn that "fraud neighbors = suspicious", while RGTAN is explicitly told this information through the 6 neighbor statistics.
+
 ---
 
 ## 4. Model Architecture

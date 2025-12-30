@@ -40,7 +40,6 @@ BENCHMARK_METRICS = {
 MODEL_INFO = {
     "RGTAN": {
         "full_name": "Risk-aware Graph Temporal Attention Network",
-        "paper": "TKDE 2025",
         "description": """
 **RGTAN** extends GTAN by adding **Risk-aware Neighbor Statistics** to capture fraud patterns in graph neighborhoods.
 
@@ -71,7 +70,6 @@ Input (127 features) + Neighbor Risk (6 features)
     },
     "GTAN": {
         "full_name": "Graph Temporal Attention Network",
-        "paper": "AAAI 2023",
         "description": """
 **GTAN** uses **Graph Transformer Convolution** for semi-supervised fraud detection with categorical embeddings.
 
@@ -102,7 +100,6 @@ Input (127 features)
     },
     "STAGN": {
         "full_name": "Spatial-Temporal Attention Graph Network",
-        "paper": "TKDE 2020",
         "description": """
 **STAGN** combines **Temporal Attention**, **2D CNN**, and **Graph Convolution** for fraud detection.
 
@@ -388,7 +385,7 @@ def main():
         # Model Quick Info
         info = MODEL_INFO[model_name]
         st.markdown(f"**{info['full_name']}**")
-        st.caption(f"📄 Published: {info['paper']}")
+
         st.caption(f"📊 Input Shape: {info['input_shape']}")
         
         st.markdown("---")
@@ -584,10 +581,10 @@ def main():
         # Feature comparison
         st.subheader("🔧 Feature Comparison")
         feature_comparison = pd.DataFrame({
-            "Feature": ["Input Shape", "Uses CNN", "Uses Transformer", "Risk Stats", "Edge Features", "Paper"],
-            "STAGN": ["5×8 (2D)", "✅", "❌", "❌", "✅", "TKDE 2020"],
-            "GTAN": ["127 (1D)", "❌", "✅", "❌", "❌", "AAAI 2023"],
-            "RGTAN": ["133 (1D)", "✅", "✅", "✅", "❌", "TKDE 2025"],
+            "Feature": ["Input Shape", "Uses CNN", "Uses Transformer", "Risk Stats", "Edge Features"],
+            "STAGN": ["5×8 (2D)", "✅", "❌", "❌", "✅"],
+            "GTAN": ["127 (1D)", "❌", "✅", "❌", "❌"],
+            "RGTAN": ["133 (1D)", "✅", "✅", "✅", "❌"],
         })
         st.dataframe(feature_comparison, use_container_width=True, hide_index=True)
     

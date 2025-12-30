@@ -264,6 +264,198 @@ class TransformerConv(nn.Module):
 - **Gated Skip Connection:** Learns to balance between original and aggregated features
 - **Layer Normalization:** Stabilizes training
 
+---
+
+### 3.3 Multi-Head Attention Explained Simply
+
+Imagine you're in a room with 10 people talking. **Attention** means you focus on the most important person based on what you need.
+
+#### Single Attention (1 Head)
+```
+Question: "Is this transaction fraud?"
+
+You look at 6 neighbor features:
+  [degree, 1hop_risk, 2hop_risk, pagerank, ...]
+         ↓
+  "Hmm, 1hop_risk seems most important"
+         ↓
+  Give it weight 0.7, others get 0.05 each
+         ↓
+  Final answer focuses mainly on 1hop_risk
+
+Problem: You only look at data from ONE perspective!
+```
+
+#### Multi-Head Attention (9 Heads for S-FFSD)
+Instead of 1 expert, you have **9 experts** looking at the same data:
+
+```
+HEAD 1 (Risk Expert):    "1hop_risk is most important!" → weight: 0.8
+HEAD 2 (Degree Expert):  "degree matters most!" → weight: 0.6  
+HEAD 3 (PageRank Expert): "pagerank is key!" → weight: 0.7
+HEAD 4 (Pattern Expert):  "2hop_risk + degree together!" → weight: 0.5
+...
+
+Then COMBINE all expert opinions for a richer understanding!
+```
+
+#### The Math Behind It:
+
+```python
+# 9 attention heads for S-FFSD dataset
+self.att_head_num = 9
+self.att_head_size = 127 // 9  # = 14 dimensions per head
+
+# Each head processes a subset of the 127 dimensions:
+# Head 1: dimensions 1-14
+# Head 2: dimensions 15-28
+# ...
+# Head 9: dimensions 113-126
+
+# Attention formula:
+Attention(Q, K, V) = softmax(Q × K^T / √d) × V
+
+Where:
+  Q = Query ("What am I looking for?")
+  K = Key ("What features exist?")  
+  V = Value ("The actual feature values")
+  √d = Scaling factor (prevents scores from being too large)
+```
+
+| Feature | Single Head | Multi-Head (9 heads) |
+|---------|-------------|---------------------|
+| Perspectives | 1 | 9 different views |
+| Patterns found | Limited | Rich & diverse |
+| Robustness | Fragile | More stable |
+
+---
+
+### 3.4 TransformerConv Layers Explained Simply
+
+#### The Transaction Graph
+
+Transactions are connected if they share Source, Target, Location, or Type:
+
+```
+Example Graph:
+        [Trans A] ←──→ [Trans B] ←──→ [Trans C]
+             ↑                              ↑
+             └──────── [Trans D] ───────────┘
+             
+Connections mean: "These transactions are related somehow"
+```
+
+#### What is "Talking to Neighbors"?
+
+**Before GNN:**
+```
+Transaction A knows ONLY about itself:
+  "I am $500, sent at 3pm, to Account X"
+```
+
+**After GNN:**
+```
+Transaction A learns from its neighbors B and D:
+  "My neighbor B was $1000 and is FRAUD"
+  "My neighbor D was $50 and is NORMAL"
+  "Hmm... I should pay more attention to B!"
+```
+
+#### TransformerConv: Smart Message Passing
+
+Each TransformerConv layer does 3 things:
+
+**Step 1: Query, Key, Value (Q, K, V)**
+```
+For Transaction A trying to learn from neighbor B:
+
+A asks: "What should I look for?" (Query)
+B says: "Here's what I have" (Key)
+B gives: "Here's my actual info" (Value)
+```
+
+**Step 2: Attention Score**
+```
+Score = How well does A's Question match B's Answer?
+
+If A's Query matches B's Key well → HIGH attention (pay attention!)
+If they don't match → LOW attention (ignore)
+
+Formula: score = (Q · K) / √dimension
+```
+
+**Step 3: Weighted Aggregation**
+```
+A collects info from ALL neighbors, weighted by attention:
+
+Neighbor B (fraud, high attention 0.7): contributes a lot
+Neighbor D (normal, low attention 0.3): contributes less
+
+A's new features = 0.7 × B's features + 0.3 × D's features
+```
+
+#### Why 2 Layers = 2-Hop Neighborhood
+
+**Layer 1: Learn from 1-hop neighbors**
+```
+        You (A)
+         ↓ learns from
+    [B]  [C]  [D]   ← Your direct neighbors (1-hop)
+```
+
+**Layer 2: Learn from 2-hop neighbors**
+```
+    [B] already learned from [E][F] in Layer 1
+    [C] already learned from [G] in Layer 1
+         ↓
+    Now when You learn from [B][C]...
+    You indirectly know about [E][F][G]! ← 2-hop neighbors
+```
+
+**Visual:**
+```
+Layer 1:              Layer 2:
+   E─B                   E─B
+     ↓                     ↘
+     A  (A learns B)        A  (A learns B who learned E)
+     ↑                     ↗
+   F─C                   F─C
+
+After 2 layers: A knows about E, F indirectly!
+```
+
+#### The Gated Skip Connection
+
+This prevents losing your original information:
+
+```python
+# After attention, we have new_features from neighbors
+# But we don't want to forget our own features!
+
+gate = sigmoid(...)  # Value between 0 and 1
+
+output = gate × original_features + (1-gate) × neighbor_features
+
+# If gate = 0.8: Keep 80% of yourself, add 20% from neighbors
+# If gate = 0.2: Keep 20% of yourself, add 80% from neighbors
+```
+
+**Analogy:** You listen to friends' advice, but also trust your own judgment!
+
+#### Fraud Detection Intuition
+
+```
+If Transaction A is surrounded by fraud transactions:
+  Layer 1: "My neighbors B, C are fraud → I might be suspicious"
+  Layer 2: "B's neighbors are also fraud → Even more suspicious!"
+  
+Final: A gets HIGH fraud probability because of its neighborhood!
+```
+
+**This is why GNN works for fraud:** Fraudsters often form **clusters** - detecting one helps detect others! 🕵️
+
+---
+
 #### 3.2.4 RGTAN Main Model
 
 ```python
@@ -284,6 +476,111 @@ class RGTAN(nn.Module):
             nn.Linear(...), nn.BatchNorm1d(...), nn.PReLU(), nn.Dropout(0.1),
             nn.Linear(..., n_classes)
         ))
+```
+
+---
+
+### 3.5 Understanding Attention Heads: RGTAN vs GTAN
+
+RGTAN has **more attention heads** than GTAN because it processes additional neighbor statistics.
+
+#### Attention Heads Comparison:
+
+**GTAN Architecture (8 total heads):**
+```
+TransformerConv Layer 1: 4 attention heads
+TransformerConv Layer 2: 4 attention heads
+─────────────────────────────────────────
+Total: 8 attention heads (only in GNN layers)
+```
+
+**RGTAN Architecture (17 total heads):**
+```
+Neighbor Stats Processing: 9 attention heads (EXTRA!)
+TransformerConv Layer 1:  4 attention heads
+TransformerConv Layer 2:  4 attention heads
+─────────────────────────────────────────────────────
+Total: 17 attention heads
+```
+
+#### Where Each Attention is Used:
+
+| Attention Type | GTAN | RGTAN | Purpose |
+|---------------|------|-------|---------|
+| **TransformerConv (4 heads × 2 layers)** | ✅ 8 | ✅ 8 | Graph neighbor message passing |
+| **Neighbor Stats (9 heads)** | ❌ 0 | ✅ 9 | Process 6 risk statistics |
+| **Total** | **8** | **17** | |
+
+#### Why 9 Heads for Neighbor Stats (RGTAN Only)?
+
+```python
+# Configuration per dataset
+nei_att_heads = {
+    'yelp': 4,      # Simpler patterns
+    'amazon': 5,    # Medium complexity  
+    'S-FFSD': 9     # Financial fraud has complex patterns!
+}
+```
+
+**S-FFSD uses 9 heads because:**
+- Financial fraud has **many subtle patterns** in neighbor statistics
+- 6 neighbor stats can combine in **complex ways**
+- 9 "experts" catch more patterns than fewer heads
+
+#### The Two Types of Attention:
+
+**1. TransformerConv Attention (Both models):**
+```
+"Which of my connected transactions should I pay attention to?"
+
+Node A in graph:
+     [B] ← attention weight 0.5 (fraud neighbor - important!)
+      ↑
+[A] ─→ [C] ← attention weight 0.3
+      ↓
+     [D] ← attention weight 0.2
+```
+
+**2. Neighbor Stats Attention (RGTAN only):**
+```
+"Which neighbor statistics should I focus on?"
+
+6 Stats: [degree, riskstat, 1hop_deg, 2hop_deg, 1hop_risk, 2hop_risk]
+              ↓
+9 attention heads (9 "experts"):
+  Head 1: "degree + riskstat together reveal patterns!"
+  Head 2: "2hop_riskstat is most predictive!"
+  Head 3: "1hop_degree matters for this case!"
+  ...
+  Head 9: "Combination of all stats!"
+```
+
+#### Code Location:
+
+```python
+# TransformerConv attention (in model init)
+heads = [4, 4]  # 4 heads per layer
+
+# Neighbor stats attention (RGTAN specific)
+nei_att_head = args['nei_att_heads'][args['dataset']]  # 9 for S-FFSD
+
+# In TransEmbedding class
+self.att_head_num = 9
+self.att_head_size = 127 // 9  # = 14 dimensions per head
+```
+
+#### Why RGTAN Performs Better:
+
+```
+GTAN: 
+  - Has to LEARN that "fraud neighbors = suspicious" through GNN
+  - Only 8 attention heads
+  - Implicit neighbor risk learning
+
+RGTAN:
+  - EXPLICITLY given neighbor risk statistics
+  - 17 attention heads (9 extra for risk stats)
+  - Directly analyzes: "3 of my neighbors are fraud!"
 ```
 
 ---
