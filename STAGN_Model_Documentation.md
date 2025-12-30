@@ -498,3 +498,223 @@ python main.py --method stagn
 | **Risk Stats** | ❌ | ❌ | ✅ |
 
 **Key Insight:** STAGN focuses on **sequential temporal patterns** within each transaction's history, while GTAN/RGTAN focus on **graph-based patterns** across related transactions.
+
+---
+
+## 12. STAGN Explained Simply (Analogical Explanation)
+
+### 12.1 The Main Idea
+
+> **STAGN looks at a transaction's history like a picture and checks who sends money to whom.**
+
+Imagine you're a detective trying to catch fraud. You ask TWO questions:
+
+| Question | STAGN's Solution |
+|----------|------------------|
+| **"What's the transaction pattern over time?"** | Create a **picture** (5×8 matrix) and use CNN to find patterns |
+| **"Who is sending money to whom?"** | Build a **graph** of accounts and learn relationships |
+
+---
+
+### 12.2 The "Picture" of a Transaction
+
+For each transaction, STAGN creates a 5×8 table like a mini-picture:
+
+```
+Example: Alice just sent $500 to Shop1
+
+Look at Alice's PAST transactions:
+─────────────────────────────────────────────────────────────
+                  How far back we look (# of transactions)
+                  ↓
+             Last 1  Last 3  Last 5  ... Last 500
+             ────────────────────────────────────
+Avg Amount    $100    $120    $115   ...  $80      ← Row 1
+Total Amount  $100    $360    $575   ... $40000    ← Row 2
+Amount - Avg  +$400   +$380   +$385  ... +$420     ← Row 3 (ANOMALY!)
+Count           1       3       5    ...  500      ← Row 4
+Entropy       0.0     0.1     0.2    ...  0.5      ← Row 5
+─────────────────────────────────────────────────────────────
+
+This becomes a 5×8 "picture" of Alice's transaction history!
+```
+
+**Why Make a "Picture"?**
+
+```
+Just like a doctor looks at an X-ray to spot problems,
+STAGN looks at this "transaction picture" to spot fraud patterns!
+
+Normal transaction:     Fraud transaction:
+┌────────────────┐     ┌────────────────┐
+│ ░░░░░░░░░░░░░░ │     │ ░░░░░░████░░░░ │  ← Spike!
+│ ░░░░░░░░░░░░░░ │     │ ░░░░░████████░ │  ← Unusual!
+│ ░░░░░░░░░░░░░░ │     │ ░░░████████░░░ │
+│ ░░░░░░░░░░░░░░ │     │ ░░░░░░░░░░░░░░ │
+│ ░░░░░░░░░░░░░░ │     │ ░░░░░░░░░░░░░░ │
+└────────────────┘     └────────────────┘
+   Smooth pattern        Clear anomaly!
+```
+
+---
+
+### 12.3 Temporal Attention ("Which time period matters?")
+
+Not all time periods are equally important!
+
+```
+Example: Is this $500 transaction fraud?
+
+STAGN asks: "Which past period should I focus on?"
+
+Last 1 transaction:   Weight 5%  (too recent, not enough info)
+Last 3 transactions:  Weight 10%
+Last 5 transactions:  Weight 15%
+Last 10 transactions: Weight 30% ← "This seems important!"
+Last 20 transactions: Weight 25% ← "This too!"
+Last 50 transactions: Weight 10%
+Last 100 transactions: Weight 3%
+Last 500 transactions: Weight 2%  (too old, may not be relevant)
+
+"I'll focus on the last 10-20 transaction window!"
+```
+
+**Simple Analogy:** Like a student studying for an exam - recent chapters matter more than old ones!
+
+---
+
+### 12.4 2D CNN ("Find patterns in the picture")
+
+After attention, the CNN slides a small "window" over the picture to find patterns:
+
+```
+CNN uses a 2×2 window to detect patterns:
+
+┌────┬────┐
+│ ?  │ ?  │  ← Looking at adjacent time windows + features
+│ ?  │ ?  │
+└────┴────┘
+
+Patterns detected:
+  ✓ "When Total Amount is HIGH and Count is LOW"
+    → BIG transaction, few prior transactions = SUSPICIOUS!
+
+  ✓ "When Bias (Amount-Avg) is HIGH and Entropy is LOW"
+    → Unusual amount, same transaction types = SUSPICIOUS!
+```
+
+---
+
+### 12.5 The Account Graph ("Who transacts with whom?")
+
+STAGN builds a graph of accounts (not transactions):
+
+```
+                    Accounts Graph
+                    
+    [Alice] ─────$500────→ [Shop1]
+        │                     ↑
+        └────$200────→ [Shop2]│
+                              │
+    [Bob]   ────$100──────────┘
+
+Question: Is Alice suspicious?
+  - Alice sends to Shop1 and Shop2
+  - Bob also sends to Shop1
+  
+If Shop1 is known for fraud, everyone sending to Shop1 is suspicious!
+```
+
+**Why is this helpful?**
+
+```
+Pattern 1: "Money flowing to suspicious account"
+  If Shop1 receives money from known fraudsters → Shop1 is suspicious
+  If Alice sends to Shop1 → Alice might be suspicious too!
+
+Pattern 2: "Unusual sender"
+  If most senders to Shop1 are verified, but Alice is new
+  → Alice's transaction is worth checking!
+```
+
+---
+
+### 12.6 The Detective Analogy
+
+```
+You're a detective investigating a suspicious bank transaction:
+
+🔍 STEP 1: LOOK AT HISTORY (Temporal Attention)
+   "Let me check this account's past transactions..."
+   "Hmm, the transactions from 10-20 ago look relevant!"
+
+📷 STEP 2: SPOT PATTERNS (2D CNN)
+   "I'll create a visual chart of their spending..."
+   "Wait! I see a sudden spike in amount! That's suspicious!"
+
+📊 STEP 3: CHECK RELATIONSHIPS (GCN)
+   "Who are they sending money to?"
+   "Shop1 has received money from 3 known fraudsters..."
+
+🎯 STEP 4: MAKE DECISION
+   "The history shows unusual patterns + suspicious recipient"
+   → "This is likely FRAUD!"
+```
+
+---
+
+### 12.7 Real World Example
+
+```
+Transaction: New user "Eve" sends $5000 to "XYZ Shop"
+
+STAGN Analysis:
+┌────────────────────────────────────────────────────────────┐
+│ 1. TIME CHECK: Eve has only 3 prior transactions          │
+│    - All small amounts ($20, $30, $50)                     │
+│    - Suddenly $5000! → RED FLAG                            │
+│                                                             │
+│ 2. PATTERN CHECK: The 5×8 picture shows:                   │
+│    - Bias (Amount-Avg) = $4950! Very unusual               │
+│    - Low count in all time windows → New account           │
+│    → CNN detects "new account, big spend" pattern          │
+│                                                             │
+│ 3. GRAPH CHECK: XYZ Shop                                   │
+│    - Receives money from 2 known fraudsters                │
+│    - Most legitimate senders are old accounts              │
+│    → Graph embedding shows suspicious receiver             │
+│                                                             │
+│ FINAL: 87% probability of FRAUD                            │
+└────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 12.8 Super Simple Summary
+
+```
+STAGN combines THREE ideas:
+
+1. 📅 TIME ATTENTION
+   "Which time period in history is most relevant?"
+
+2. 📷 CNN FOR PATTERNS
+   "Treat transaction history as a picture, find visual patterns"
+
+3. 🔗 ACCOUNT GRAPH
+   "Who sends money to whom? Are they connected to fraudsters?"
+
+Together: Catch fraud by looking at TIME + PATTERNS + RELATIONSHIPS
+```
+
+---
+
+### 12.9 STAGN vs GTAN/RGTAN: Simple Difference
+
+| | GTAN/RGTAN | STAGN |
+|---|---|---|
+| **Looks at** | List of 127 numbers | 5×8 "picture" |
+| **Graph type** | Transaction connections | Account connections |
+| **Finds patterns using** | Transformer attention | CNN (like image analysis) |
+| **Best at** | Transaction clusters | Time patterns + Account relationships |
+
