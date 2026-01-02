@@ -28,8 +28,15 @@ from methods.stagn.stagn_main import load_stagn_data
 # ============================================
 # BENCHMARK METRICS FROM README
 # ============================================
+# Internal IDs for models: STAGN, GTAN, RGTAN
+MODEL_NAME_MAP = {
+    "1)GATE-Net (Graph Attention Temporal Embedding Network)": "STAGN",
+    "2)GAP-Net (Gated Attention & Propagation Network)": "GTAN",
+    "3)STRA-GNN (Structural-Temporal Risk Attention GNN)": "RGTAN"
+}
+
 BENCHMARK_METRICS = {
-    "STAGN": {"AUC": 0.7659, "F1": 0.6852, "AP": 0.3599},
+    "STAGN": {"AUC": 0.7659, "F1": 0.6852},
     "GTAN": {"AUC": 0.8286, "F1": 0.7336, "AP": 0.6585},
     "RGTAN": {"AUC": 0.8461, "F1": 0.7513, "AP": 0.6939},
 }
@@ -47,26 +54,90 @@ MODEL_INFO = {
 - 🔹 127 temporal features + 6 neighbor risk features
 - 🔹 TransformerConv with 4-head attention
 - 🔹 1D CNN for processing neighbor statistics  
-- 🔹 Multi-head attention for risk aggregation (9 heads for S-FFSD)
+- 🔹 Multi-head attention for risk aggregation (9 heads for Fraud Dataset)
 - 🔹 Gated skip connections + Layer normalization
+
+**� Neighbor Feature Fields (6 columns):**
+
+| Field | Description |
+|-------|-------------|
+| `degree` | In-degree of the node (number of incoming edges) |
+| `riskstat` | Count of 1-hop neighbors labeled as fraudulent |
+| `1hop_degree` | Sum of degrees of 1-hop neighbors |
+| `2hop_degree` | Sum of degrees of 2-hop neighbors |
+| `1hop_riskstat` | Sum of risk statistics of 1-hop neighbors |
+| `2hop_riskstat` | Sum of risk statistics of 2-hop neighbors |
+
+
+**�🕸️ Graph Construction Algorithm:**
+1. **Group transactions** by each attribute (Source, Target, Location, Type)
+2. **Sort by time** within each group
+3. **Create edges** between each transaction and its next 3 temporal neighbors
+4. **Combine all edges** into a single heterogeneous graph
+
+**Edge Types captured:**
+- 🔗 **Same Source** (Behavioral sequence)
+- 🔗 **Same Target** (Recipient behavior)
+- 🔗 **Same Location** (Localized fraud hotspots)
+- 🔗 **Same Type** (Category-specific patterns)
+
+```
+┌─────────────────┐          ┌──────────────────────────────────────┐
+│   Edge Types    │          │       Transaction Graph              │
+├─────────────────┤          │                                      │
+│ ┌─────────────┐ │          │            ┌─────────┐               │
+│ │ Same Source │ │          │        ┌──►│ Trans 2 │──┐            │
+│ └─────────────┘ │          │        │   └─────────┘  │            │
+│ ┌─────────────┐ │          │ ┌──────┴──┐         ┌───▼──────┐     │
+│ │ Same Target │ │          │ │ Trans 1 │         │  Trans 4 │     │
+│ └─────────────┘ │          │ └──────┬──┘         └───▲──────┘     │
+│ ┌─────────────┐ │          │        │   ┌─────────┐  │            │
+│ │Same Location│ │          │        └──►│ Trans 3 │──┘            │
+│ └─────────────┘ │          │            └─────────┘               │
+│ ┌─────────────┐ │          └──────────────────────────────────────┘
+│ │  Same Type  │ │
+│ └─────────────┘ │
+└─────────────────┘
+```
         """,
         "architecture": """
 ```
-Input (127 features) + Neighbor Risk (6 features)
+Input (127 temporal features) + Neighbor Risk (6 features)
          │
          ▼
-   TransEmbedding Layer
-   (Categorical + 1D CNN for Risk)
+   ┌─────────────────────────────────────────┐
+   │         TransEmbedding Layer            │
+   │  ├── Categorical Embeddings             │
+   │  └── 1D CNN + Multi-Head Attention      │
+   │       (★ 9 HEADS for risk stats)        │
+   └─────────────────────────────────────────┘
          │
          ▼
-   2× TransformerConv (4 heads each)
+   ┌─────────────────────────────────────────┐
+   │   TransformerConv Layer 1               │
+   │   (★ 4 HEADS for graph neighbors)       │
+   └─────────────────────────────────────────┘
+         │
+         ▼
+   ┌─────────────────────────────────────────┐
+   │   TransformerConv Layer 2               │
+   │   (★ 4 HEADS for graph neighbors)       │
+   └─────────────────────────────────────────┘
          │
          ▼
    MLP Classifier → Fraud/Normal
 ```
+
+**🎯 Total: 17 Attention Heads (9 + 4 + 4)**
+
+**Why Two Types of Attention?**
+- **9 Heads (Neighbor Risk):** Learn which of the 6 risk statistics are most important. Different "experts" focus on different stat combinations.
+- **4 Heads (TransformerConv):** Learn which neighboring transactions in the graph are most relevant. 4 parallel perspectives on graph structure.
         """,
+
         "features_used": ["Time", "Source", "Target", "Amount", "Location", "Type", "Neighbor Risk Stats"],
         "input_shape": "(N, 133)",
+        "input_shape_explanation": "N = number of transactions, 133 = 127 temporal features + 6 neighbor risk features",
     },
     "GTAN": {
         "full_name": "Graph Temporal Attention Network",
@@ -97,38 +168,103 @@ Input (127 features)
         """,
         "features_used": ["Time", "Source", "Target", "Amount", "Location", "Type"],
         "input_shape": "(N, 127)",
+        "input_shape_explanation": "N = number of transactions, 127 = temporal aggregation features (15 time windows × 8 stats + raw fields)",
     },
     "STAGN": {
         "full_name": "Spatial-Temporal Attention Graph Network",
         "description": """
 **STAGN** combines **Temporal Attention**, **2D CNN**, and **Graph Convolution** for fraud detection.
 
+**🎯 Core Idea:** Treat each transaction's history as a "picture" and use image-processing techniques (CNN) to spot fraud patterns!
+
 **Key Features:**
 - 🔹 2D feature matrices (5 features × 8 time windows)
 - 🔹 Temporal attention across time windows
-- 🔹 2D CNN for spatial-temporal pattern extraction
-- 🔹 Graph Convolution on Source→Target transaction graph
+- 🔹 2D CNN for spatial-temporal pattern extraction (64 filters)
+- 🔹 Graph Convolution on Source→Target account graph
 - 🔹 Edge features (Amount + Location)
+
+**📊 2D Feature Matrix (5×8 = 40 values per transaction):**
+
+| Feature | Description |
+|---------|-------------|
+| `AvgAmount` | Average transaction amount in past T transactions |
+| `TotalAmount` | Total transaction amount in past T transactions |
+| `BiasAmount` | Current amount - Average (anomaly indicator!) |
+| `Count` | Number of transactions in past T |
+| `TradingEntropy` | Diversity of transaction types |
+
+**⏱️ 8 Time Windows:** `[1, 3, 5, 10, 20, 50, 100, 500]` past transactions
+
+**🕸️ Account Graph (Different from GAP-Net/STRA-GNN!):**
+- **Nodes = Accounts** (Sources + Targets), NOT transactions
+- **Edges = Transactions** (who sent money to whom)
+- **Edge Features:** Normalized Amount + One-Hot Location
+
+```
+Graph Example:
+   [Alice] ───$500───→ [Shop1] ←───$100─── [Bob]
+       │                   ↑
+       └─────$200─────→ [Shop2]
+       
+If Shop1 receives from known fraudsters → Alice is risky!
+```
         """,
         "architecture": """
 ```
-Input (5×8 matrix)          Transaction Graph
-         │                        │
-         ▼                        ▼
-   Temporal Attention        GraphConv (2 layers)
-         │                        │
-         ▼                        │
-      2D CNN                      │
-         │                        │
-         └───────► Fusion ◄───────┘
-                     │
-                     ▼
-              MLP Classifier → Fraud/Normal
+┌──────────────────────────────────────────────────────────────────┐
+│                    STAGN ARCHITECTURE                            │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Input: 5×8 Matrix              Account Graph                    │
+│         │                            │                           │
+│         ▼                            ▼                           │
+│  ┌─────────────────┐          ┌─────────────────┐               │
+│  │ Temporal        │          │ GraphConv       │               │
+│  │ Attention       │          │ Layer 1 (→128)  │               │
+│  │ "Which time     │          │                 │               │
+│  │  windows        │          │ GraphConv       │               │
+│  │  matter?"       │          │ Layer 2 (→8)    │               │
+│  └────────┬────────┘          └────────┬────────┘               │
+│           │                            │                         │
+│           ▼                            │                         │
+│  ┌─────────────────┐                   │                         │
+│  │ 2D CNN          │                   │                         │
+│  │ (64 filters,    │                   │                         │
+│  │  2×2 kernel)    │                   │                         │
+│  │ "Find visual    │                   │                         │
+│  │  patterns!"     │                   │                         │
+│  └────────┬────────┘                   │                         │
+│           │                            │                         │
+│           └──────────► FUSION ◄────────┘                         │
+│                          │                                       │
+│                          ▼                                       │
+│                   MLP Classifier                                 │
+│                   [Fraud / Normal]                               │
+└──────────────────────────────────────────────────────────────────┘
 ```
         """,
         "features_used": ["Time", "Source", "Target", "Amount", "Location", "Type"],
         "input_shape": "(N, 5, 8)",
+        "input_shape_explanation": "N = transactions, 5 = features (AvgAmount, TotalAmount, BiasAmount, Count, Entropy), 8 = time windows",
+        "extra_info": """
+**🔍 How Each Component Works:**
+
+| Layer | What It Does | Output |
+|:------|:-------------|:-------|
+| Temporal Attention | Focuses on important time windows | (8, 10) |
+| 2D CNN | Finds visual patterns in history "picture" | (64, 8, 10) |
+| GraphConv | Learns account relationships | 24 features |
+| Fusion | Combines CNN + Graph features | 48 features |
+| Classifier | Final fraud probability | 2 classes |
+
+**💡 Why GATE-Net is Unique:**
+- Treats transaction history as an **image** (2D matrix)
+- Uses **CNN** (like image recognition) to spot fraud patterns
+- Builds **Account graph** (not transaction graph) to find suspicious receivers
+        """
     }
+
 }
 
 # ============================================
@@ -309,14 +445,20 @@ def render_risk_gauge(prob):
 
 def render_metrics_comparison():
     """Render benchmark metrics comparison chart."""
+    # Map internal IDs to display names
+    display_names = {
+        "STAGN": "1)GATE-Net",
+        "GTAN": "2)GAP-Net", 
+        "RGTAN": "3)STRA-GNN"
+    }
     models = list(BENCHMARK_METRICS.keys())
-    metrics = ["AUC", "F1", "AP"]
+    metrics = ["AUC", "F1"]  # Only AUC and F1 for chart (AP not available for all models)
     
-    # Create DataFrame for chart
+    # Create DataFrame for chart with display names
     chart_data = pd.DataFrame({
-        metric: [BENCHMARK_METRICS[m][metric] for m in models]
+        metric: [BENCHMARK_METRICS[m].get(metric, 0) for m in models]
         for metric in metrics
-    }, index=models)
+    }, index=[display_names.get(m, m) for m in models])
     
     return chart_data
 
@@ -342,7 +484,8 @@ def get_dataset_stats(feat_df, labels, g, model_name):
     if isinstance(feat_df, pd.DataFrame):
         n_features = feat_df.shape[1]
     else:
-        n_features = f"{feat_df.shape[1]}×{feat_df.shape[2]}"
+        # For STAGN: 5 features × 8 time windows, but show "5 (×8 windows)"
+        n_features = f"5 (×{feat_df.shape[2]} windows)"
     
     return {
         "samples": n_samples,
@@ -373,28 +516,37 @@ def main():
         st.markdown("---")
         
         # Model Selection
-        model_name = st.radio(
+        display_name = st.radio(
             "🔧 Select Model",
-            options=["RGTAN", "GTAN", "STAGN"],
-            index=0,
+            options=list(MODEL_NAME_MAP.keys()),
+            index=2, # Starts on STRA-GNN (RGTAN)
             help="Choose a fraud detection model"
         )
+        
+        # Internal model ID for logic (STAGN, GTAN, or RGTAN)
+        model_name = MODEL_NAME_MAP[display_name]
         
         st.markdown("---")
         
         # Model Quick Info
         info = MODEL_INFO[model_name]
-        st.markdown(f"**{info['full_name']}**")
+        st.markdown(f"**{display_name.split(' (')[0]}**") # Show shorter version in subheader
 
         st.caption(f"📊 Input Shape: {info['input_shape']}")
+        st.caption(f"💡 {info['input_shape_explanation']}")
         
         st.markdown("---")
         st.markdown("### 📈 Benchmark Metrics")
         metrics = BENCHMARK_METRICS[model_name]
-        col1, col2, col3 = st.columns(3)
-        col1.metric("AUC", f"{metrics['AUC']:.4f}")
-        col2.metric("F1", f"{metrics['F1']:.4f}")
-        col3.metric("AP", f"{metrics['AP']:.4f}")
+        if "AP" in metrics:
+            col1, col2, col3 = st.columns(3)
+            col1.metric("AUC", f"{metrics['AUC']:.4f}")
+            col2.metric("F1", f"{metrics['F1']:.4f}")
+            col3.metric("AP", f"{metrics['AP']:.4f}")
+        else:
+            col1, col2 = st.columns(2)
+            col1.metric("AUC", f"{metrics['AUC']:.4f}")
+            col2.metric("F1", f"{metrics['F1']:.4f}")
     
     # ========== MAIN CONTENT ==========
     
@@ -425,7 +577,7 @@ def main():
     
     # ========== TAB 1: INFERENCE ==========
     with tab1:
-        st.header(f"🔍 {model_name} Fraud Detection")
+        st.header(f"🔍 {display_name.split(' (')[0]} Detection")
         
         if not available_ckpts:
             st.error(f"No {model_name} checkpoint found in models/. Please train or place a checkpoint there.")
@@ -529,10 +681,33 @@ def main():
             
             with col2:
                 st.dataframe(top_df, use_container_width=True, hide_index=True)
+        
+        elif show_topk and model_name == "STAGN":
+            load_checkpoint(model, ckpt_path, device)
+            with st.spinner("Computing Top-K for STAGN..."):
+                features = torch.from_numpy(feat_df).float().to(device)
+                features.transpose_(1, 2)
+                labels_t = torch.from_numpy(labels).long().to(device)
+                model.eval()
+                with torch.no_grad():
+                    logits = model(features, g.to(device))
+                    all_probs = torch.softmax(logits, dim=1)[:, 1].detach().cpu().numpy()
+                
+                test_probs = all_probs[test_idx]
+                order = np.argsort(-test_probs)[:k]
+                top_idx = np.array(test_idx)[order]
+                top_prob = test_probs[order]
+                top_df = pd.DataFrame({"Index": top_idx, "Fraud Probability": top_prob})
+                top_df["Risk Level"] = top_df["Fraud Probability"].apply(
+                    lambda x: "🔴 HIGH" if x >= 0.6 else ("🟡 MEDIUM" if x >= 0.3 else "🟢 LOW")
+                )
+            
+            with col2:
+                st.dataframe(top_df, use_container_width=True, hide_index=True)
     
     # ========== TAB 2: MODEL INFO ==========
     with tab2:
-        st.header(f"📖 {model_name} - Model Details")
+        st.header(f"📖 {display_name.split(' (')[0]} Details")
         
         info = MODEL_INFO[model_name]
         
@@ -543,13 +718,18 @@ def main():
             
             st.subheader("🏗️ Architecture")
             st.code(info["architecture"], language="text")
+            
+            # Display extra info if available (for STAGN)
+            if "extra_info" in info:
+                st.markdown(info["extra_info"])
         
         with col2:
             st.subheader("📊 Performance")
             metrics = BENCHMARK_METRICS[model_name]
             st.metric("AUC-ROC", f"{metrics['AUC']:.4f}", help="Area Under ROC Curve")
             st.metric("F1-Score", f"{metrics['F1']:.4f}", help="Macro F1 Score")
-            st.metric("Avg Precision", f"{metrics['AP']:.4f}", help="Average Precision")
+            if "AP" in metrics:
+                st.metric("Avg Precision", f"{metrics['AP']:.4f}", help="Average Precision")
             
             st.subheader("📋 Features Used")
             for feat in info["features_used"]:
@@ -559,16 +739,28 @@ def main():
     with tab3:
         st.header("📈 Model Comparison")
         
-        st.subheader("Benchmark Results on S-FFSD Dataset")
+        st.subheader("Benchmark Results on Fraud Dataset")
         
-        # Metrics table
-        comparison_df = pd.DataFrame(BENCHMARK_METRICS).T
-        comparison_df = comparison_df.reset_index()
-        comparison_df.columns = ["Model", "AUC", "F1", "AP"]
+        # Metrics table - only AUC and F1 (AP not available for all models)
+        comparison_data = []
+        # Map internal IDs to display names
+        display_names = {
+            "STAGN": "1)GATE-Net",
+            "GTAN": "2)GAP-Net", 
+            "RGTAN": "3)STRA-GNN"
+        }
+        for model_id, metrics in BENCHMARK_METRICS.items():
+            comparison_data.append({
+                "Model": display_names.get(model_id, model_id),
+                "AUC": metrics.get("AUC", "-"),
+                "F1": metrics.get("F1", "-"),
+                "AP": metrics.get("AP", "-")
+            })
+        comparison_df = pd.DataFrame(comparison_data)
         
-        # Highlight best values
+        # Highlight best values (only for numeric columns)
         st.dataframe(
-            comparison_df.style.highlight_max(subset=["AUC", "F1", "AP"], color="lightgreen"),
+            comparison_df.style.highlight_max(subset=["AUC", "F1"], color="lightgreen"),
             use_container_width=True,
             hide_index=True
         )
@@ -582,11 +774,55 @@ def main():
         st.subheader("🔧 Feature Comparison")
         feature_comparison = pd.DataFrame({
             "Feature": ["Input Shape", "Uses CNN", "Uses Transformer", "Risk Stats", "Edge Features"],
-            "STAGN": ["5×8 (2D)", "✅", "❌", "❌", "✅"],
-            "GTAN": ["127 (1D)", "❌", "✅", "❌", "❌"],
-            "RGTAN": ["133 (1D)", "✅", "✅", "✅", "❌"],
+            "1)GATE-Net": ["5×8 (2D)", "✅", "❌", "❌", "✅"],
+            "2)GAP-Net": ["127 (1D)", "❌", "✅", "❌", "❌"],
+            "3)STRA-GNN": ["133 (1D)", "✅", "✅", "✅", "❌"],
         })
         st.dataframe(feature_comparison, use_container_width=True, hide_index=True)
+        
+        # Graph Structure comparison
+        st.subheader("🕸️ Graph Structure Comparison")
+        st.markdown("""
+**What do Nodes and Edges represent in each model?**
+        """)
+        
+        graph_comparison = pd.DataFrame({
+            "Aspect": [
+                "Node Represents",
+                "Edge Represents", 
+                "Node Features",
+                "Edge Features",
+                "Graph Type"
+            ],
+            "1)GATE-Net": [
+                "Bank Account (Source/Target)",
+                "Transaction (money flow)", 
+                "Random init (learned)",
+                "Amount + Location",
+                "Account Graph"
+            ],
+            "2)GAP-Net": [
+                "Individual Transaction",
+                "Shared attribute link",
+                "127 temporal features",
+                "None (just connection)",
+                "Transaction Graph"
+            ],
+            "3)STRA-GNN": [
+                "Individual Transaction",
+                "Shared attribute link",
+                "133 features (127 + 6 risk)",
+                "None (just connection)",
+                "Transaction Graph"
+            ]
+        })
+        st.dataframe(graph_comparison, use_container_width=True, hide_index=True)
+        
+        st.markdown("""
+**Key Difference:**
+- **GATE-Net:** *"Who sends money to whom?"* - Tracks money flow between accounts
+- **GAP-Net/STRA-GNN:** *"Which transactions are similar?"* - Connects transactions sharing Source, Target, Location, or Type
+        """)
     
     # ========== TAB 4: DATASET INFO ==========
     with tab4:
@@ -599,6 +835,17 @@ def main():
         col2.metric("🔢 Features", f"{stats['features']}")
         col3.metric("🔗 Graph Nodes", f"{stats['nodes']:,}")
         col4.metric("➡️ Graph Edges", f"{stats['edges']:,}")
+        
+        st.markdown("---")
+        
+        st.subheader("🔍 Data Diversity (Unique Entities)")
+        col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+        col_m1.metric("👤 Unique Sources", "30,346")
+        col_m2.metric("🎯 Unique Targets", "886")
+        col_m3.metric("📍 Unique Locations", "296")
+        col_m4.metric("💳 Transaction Types", "166")
+        
+        st.caption("Note: Thousands of Sources sending to a few hundred Targets is a typical merchant-customer relationship.")
         
         st.markdown("---")
         
@@ -615,21 +862,91 @@ def main():
             st.metric("Fraud Ratio (labeled)", f"{stats['fraud_ratio']:.2%}")
         
         with col2:
-            st.subheader("📋 Raw S-FFSD Fields")
+            st.subheader("📋 Raw Fraud Dataset Fields")
             raw_fields = pd.DataFrame({
                 "Field": ["Time", "Source", "Target", "Amount", "Location", "Type", "Labels"],
-                "Type": ["int32", "string", "string", "float32", "string", "string", "int32"],
                 "Description": [
-                    "Transaction timestamp",
-                    "Sender account ID",
-                    "Receiver account ID",
-                    "Transaction amount",
-                    "Location code",
-                    "Transaction type",
-                    "0=Normal, 1=Fraud, 2=Unlabeled"
+                    "Transaction timestamp (numeric, represents sequential order)",
+                    "Source account/entity ID",
+                    "Target account/entity receiving the transaction",
+                    "Transaction amount (numeric)",
+                    "Location code where transaction occurred",
+                    "Transaction type code",
+                    "Fraud label: 0 = legitimate, 1 = fraudulent, 2 = unlabeled"
+                ],
+                "Example Values": [
+                    "0, 1, 2, ...",
+                    "S10000, S10001, ...",
+                    "T1000, T1001, ...",
+                    "13.74, 73.17, 68.59, ...",
+                    "L100, L101, L102, ...",
+                    "TP100, TP101, TP102, ...",
+                    "0, 1, 2"
                 ]
             })
             st.dataframe(raw_fields, use_container_width=True, hide_index=True)
+
+        st.markdown("---")
+        
+        st.subheader("⚙️ Feature Engineering: Time Window Patterns")
+        
+        if model_name == "STAGN":
+            st.markdown("""
+            For each of the **8 time windows**, **5 features** are generated to capture historical behavior.
+            These engineered features create a 5×8 matrix per transaction (like an image!).
+            """)
+            
+            feature_patterns = pd.DataFrame({
+                "Feature Pattern": [
+                    "AvgAmountT",
+                    "TotalAmountT",
+                    "BiasAmountT",
+                    "NumberT",
+                    "TradingEntropyT"
+                ],
+                "Description": [
+                    "Average transaction amount in the past T records",
+                    "Total transaction amount in the past T records",
+                    "Current amount - AvgAmountT (deviation indicator)",
+                    "Number of transactions in the past T records",
+                    "Change in transaction type diversity (entropy)"
+                ]
+            })
+            st.dataframe(feature_patterns, use_container_width=True, hide_index=True)
+            
+            st.info("💡 **8 Time Windows:** [1, 3, 5, 10, 20, 50, 100, 500] past transactions → 5 features × 8 windows = 40 values per transaction")
+        else:
+            st.markdown("""
+            For each of the **15 time windows**, **8 features** are generated to capture historical behavior. 
+            These engineered features help the model distinguish between a normal transaction and a sudden change in user behavior.
+            """)
+            
+            feature_patterns = pd.DataFrame({
+                "Feature Pattern": [
+                    "trans_at_avg_{T}",
+                    "trans_at_totl_{T}",
+                    "trans_at_std_{T}",
+                    "trans_at_bias_{T}",
+                    "trans_at_num_{T}",
+                    "trans_target_num_{T}",
+                    "trans_location_num_{T}",
+                    "trans_type_num_{T}"
+                ],
+                "Description": [
+                    "Average transaction amount in the past T time units",
+                    "Total transaction amount in the past T time units",
+                    "Standard deviation of amounts in the past T time units",
+                    "Difference between current amount and average (anomaly detection)",
+                    "Number of transactions in the past T time units",
+                    "Number of unique targets in the past T time units",
+                    "Number of unique locations in the past T time units",
+                    "Number of unique transaction types in the past T time units"
+                ]
+            })
+            st.dataframe(feature_patterns, use_container_width=True, hide_index=True)
+            
+            st.info("💡 Note: {T} represents the window size (e.g., 5, 20, 50, etc.). 15 windows × 8 stats = 120 features per transaction.")
+
 
 if __name__ == "__main__":
     main()
