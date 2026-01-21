@@ -4,7 +4,8 @@
 
 **Intern Name:** [Your Name]  
 **Duration:** 6 Weeks  
-**Organization:** Invincible IT Services  
+**Organization:** Centre of Excellence in Cognitive Intelligent Systems for Sustainable Solutions (CISSS)  
+**Institution:** R.V. College of Engineering (RVCE)  
 **Project Title:** AntiFraud - Financial Fraud Detection Framework using Graph Neural Networks
 
 ---
@@ -13,301 +14,192 @@
 
 ## 1.1 Organizational Structure
 
-**Company Name:** Invincible IT Services  
-**Website:** [https://www.invincibleitservices.com/](https://www.invincibleitservices.com/)  
-**Founded:** 2016  
-**Location:** Bengaluru, Karnataka, India  
-**Industry:** Information Technology & Software Development
+**Center Name:** Centre of Excellence in Cognitive Intelligent Systems for Sustainable Solutions (CISSS)  
+**Associated Platform:** HPCC Systems (High Performance Computing Cluster)  
+**Department:** Computer Science and Engineering  
+**Institution:** R.V. College of Engineering (RVCE), Bengaluru  
+**Established:** 2017 (Partnership with LexisNexis Risk Solutions)
 
-### Company Overview
+### Organization Overview
 
-Invincible IT Services is a dynamic software development company based in Bengaluru, India. Founded in 2016, the company has established itself as a provider of innovative software solutions that deliver competitive advantages to clients across various industries. The organization specializes in transforming conceptual ideas into reality through their team of talented software engineers.
+The **HPCC Systems Centre of Excellence (CoE)** at RVCE, formally known as **CISSS**, is a collaborative research initiative established to empower students and faculty to conduct cutting-edge research in Cognitive Intelligent Systems. The CoE focuses on creating sustainable and innovative solutions for real-world challenges using the open-source HPCC Systems Big Data platform.
 
 ### Organizational Hierarchy
 
 ```
                     ┌─────────────────────┐
-                    │   Managing Director │
-                    │   / CEO             │
+                    │    Principal, RVCE  │
                     └──────────┬──────────┘
                                │
            ┌───────────────────┼───────────────────┐
            │                   │                   │
     ┌──────┴──────┐     ┌──────┴──────┐     ┌──────┴──────┐
-    │  Technical  │     │  Business   │     │  Operations │
-    │   Director  │     │ Development │     │   Manager   │
-    └──────┬──────┘     └─────────────┘     └─────────────┘
-           │
-    ┌──────┴──────────────────────┐
-    │                             │
-┌───┴────┐  ┌─────────┐  ┌────────┴────────┐
-│Project │  │ Quality │  │ Development     │
-│Managers│  │Assurance│  │ Teams           │
-└────────┘  └─────────┘  └─────────────────┘
-                              │
-                    ┌─────────┼─────────┐
-                    │         │         │
-              ┌─────┴──┐ ┌────┴───┐ ┌───┴────┐
-              │ Senior │ │ Junior │ │Interns │
-              │  Devs  │ │  Devs  │ │        │
-              └────────┘ └────────┘ └────────┘
+    │  Head of    │     │  Industry   │     │   Program   │
+    │  Dept (CSE) │     │  Partners   │     │   Managers  │
+    └──────┬──────┘     │(LexisNexis) │     └─────────────┘
+           │            └──────┬──────┘
+           │                   │
+    ┌──────┴───────────────────┴──┐
+    │      Core Committee         │
+    │   (Principal Investigators) │
+    └──────────────┬──────────────┘
+                   │
+         ┌─────────┴─────────┐
+         │                   │
+   ┌─────┴─────┐       ┌─────┴─────┐
+   │ Faculty   │       │ Student   │
+   │ Mentors   │       │Ambassadors│
+   └─────┬─────┘       └─────┬─────┘
+         │                   │
+   ┌─────┴───────────────────┴─────┐
+   │                               │
+┌──┴───────┐  ┌──────────┐  ┌──────┴─────┐
+│Research  │  │Interns   │  │Project     │
+│Scholars  │  │(UG/PG)   │  │Teams       │
+└──────────┘  └──────────┘  └────────────┘
 ```
 
-### Company Culture and Values
+### Vision and Mission
 
-- **Innovation:** Commitment to leveraging cutting-edge technologies and methodologies
-- **Quality:** Focus on delivering high-performing, secure, and scalable solutions
-- **Agility:** Adoption of agile development methodology for flexible project management
-- **Client-Centric:** Direct client interaction and transparent project monitoring
-- **Talent Development:** Investment in nurturing skilled software engineers
+- **Vision:** To empower young minds and professionals to conduct research in Cognitive Intelligent Systems and create sustainable tools for real-world problems.
+- **Mission:**
+    - Promote interdisciplinary research in Intelligent Systems.
+    - Utilize open-source tools (HPCC Systems) to optimize resource usage.
+    - Align research with UN Sustainable Development Goals (SDGs), specifically SDG 9 (Innovation), SDG 11 (Sustainable Communities), and SDG 17 (Partnerships).
 
 ---
 
-## 1.2 Products
+## 1.2 Products (Research Outcomes)
 
-Invincible IT Services develops custom software products tailored to client requirements. The company's product development capabilities span across:
+Unlike a traditional commercial entity, the CoE's "products" are intellectual property, research solutions, and open-source contributions.
 
-### Custom Software Products
+### Key Research Outcomes
 
-| Product Category | Description |
-|-----------------|-------------|
-| **Desktop Applications** | Feature-rich desktop software for Windows and cross-platform environments |
-| **Web Applications** | Modern, responsive web applications with robust backend systems |
-| **Mobile Applications** | Native and cross-platform mobile apps for Android, iOS, and Windows |
-| **SaaS Products** | Cloud-based Software as a Service solutions for scalable business operations |
-| **IoT Solutions** | Integrated hardware-software solutions with remote monitoring capabilities |
+| Domain | Deliverables |
+|--------|--------------|
+| **Environmental Science** | Surface water potability analysis, BOD prediction models, Water quality classification systems |
+| **Healthcare** | COVID-19 data analysis dashboards, Pandemic prediction models |
+| **Agriculture** | Crop yield prediction, Soil health monitoring systems using IoT and Big Data |
+| **Smart Cities** | Traffic pattern analysis, Urban resource management solutions |
 
-### AI-Enhanced Products
+### Open Source Contributions
 
-The company leverages AI technologies to enhance product development:
-- AI-assisted code optimization and security strengthening
-- Automated testing and quality assurance tools
-- Intelligent data processing and analytics solutions
-- Machine Learning-based fraud detection systems (relevant to internship project)
-
-### Key Product Features
-
-- **Scalability:** Products designed to handle growing user bases and data volumes
-- **Security:** Built-in security measures to protect user data and transactions
-- **User-Friendly:** Intuitive interfaces designed with digital UX best practices
-- **Cross-Platform:** Products that work seamlessly across multiple devices and platforms
+- **ECL Libraries:** Development of reusable Enterprise Control Language (ECL) libraries for the HPCC Systems platform.
+- **Machine Learning Bundles:** Contribution of GNN and ML algorithms to the open-source community.
+- **Datasets:** Curated and pre-processed datasets for academic research.
 
 ---
 
 ## 1.3 Services
 
-Invincible IT Services offers a comprehensive range of IT services:
+The CoE provides specialized academic and research services to the student community and industry partners.
 
-### Core Development Services
-
-| Service | Description |
-|---------|-------------|
-| **Software Development** | Custom software solutions using agile methodology with cutting-edge tools and technologies |
-| **Web Development** | Design and development of feature-packed, high-performing, user-friendly, secure, and scalable websites and web portals |
-| **Mobile App Development** | Cross-platform development for Android, iOS, and Windows devices with cost-effective solutions |
-| **API Development** | RESTful and GraphQL API services for system integration and data exchange |
-
-### Specialized Services
+### Academic Services
 
 | Service | Description |
 |---------|-------------|
-| **SaaS Development** | Software as a Service solutions for cloud-based business applications |
-| **IoT Development** | Integration of hardware, operating systems, development tools, remote updates, and fleet monitoring for scalable and secure IoT solutions |
-| **Digital UX Design** | User experience design services ensuring intuitive and engaging interfaces |
-| **AI-Enhanced Development** | Leveraging AI tools (ChatGPT, DeepSeek) for enhanced project implementation and code optimization |
+| **Internship Programs** | Providing 6-8 week internships for UG/PG students to work on industry-grade problems |
+| **Research Guidance** | Mentoring students for B.E/M.Tech final year projects and Ph.D. research |
+| **Workshops & Training** | Conducting hands-on workshops on Big Data Analytics, HPCC Systems, and NLP++ |
+| **Hackathons** | Organizing national-level hackathons like "Ctrl+Alt+Compete" to foster innovation |
 
-### Business Services
+### Industry Services
 
 | Service | Description |
 |---------|-------------|
-| **Offshore Development** | Dedicated offshore teams with agile approach and direct client interaction |
-| **Staff Augmentation** | Skilled developer resources for project augmentation |
-| **Consulting Services** | Expert consultation for .NET solutions and technology strategy |
-| **Digital Marketing** | Online marketing services to enhance digital presence |
-
-### Technology Productivity Metrics
-
-- **60% productivity boost** through AI-assisted automation
-- **15% reduction** in operational costs through optimized workflows
-- **Agile methodology** ensuring flexibility and timely delivery
+| **Consultancy** | Providing technical consultancy for implementing Big Data solutions |
+| **Proof of Concept (PoC)** | Developing PoCs for industry use-cases using HPCC Systems |
+| **Talent Pipeline** | Training students to be industry-ready for partners like LexisNexis Risk Solutions |
 
 ---
 
 ## 1.4 Business Partners
 
-### Technology Partners
+### Strategic Partners
 
-Invincible IT Services maintains strategic partnerships with leading technology providers:
+| Partner | Relationship |
+|---------|--------------|
+**HPCC Systems** | The primary technology partner providing the Big Data platform, mentorship, and open-source ecosystem support. |
+**LexisNexis Risk Solutions** | The corporate parent of HPCC Systems, providing funding, internship opportunities, and industry problem statements (Atlanta, USA). |
 
-| Partner Category | Partners/Technologies |
-|-----------------|----------------------|
-| **Cloud Platforms** | Microsoft Azure, AWS, Google Cloud Platform |
-| **Development Frameworks** | Microsoft (.NET), React, Angular, Vue.js |
-| **Database Solutions** | SQL Server, PostgreSQL, MongoDB |
-| **AI/ML Platforms** | OpenAI, DeepSeek, TensorFlow, PyTorch |
+### Academic Collaborations
 
-### Client Partnerships
-
-The company serves clients across multiple industries:
-
-- **Financial Services:** Banks, fintech companies, payment processors
-- **Healthcare:** Medical software and health management systems
-- **E-commerce:** Online retail platforms and marketplace solutions
-- **Manufacturing:** Industrial automation and IoT solutions
-- **Education:** Learning management systems and EdTech platforms
-
-### Industry Collaborations
-
-- Collaboration with academic institutions for research and development
-- Participation in technology conferences and industry events
-- Open-source community contributions
+- Collaboration with international universities for joint research.
+- Partnerships with other Centres of Excellence within RVCE for interdisciplinary projects.
 
 ---
 
 ## 1.5 Financials
 
-### Company Registration
+The CoE operates primarily through academic funding and industry sponsorship.
 
-- **Legal Entity:** Private Limited Company
-- **Registered in:** India (Karnataka)
-- **Year of Incorporation:** 2016
+### Funding Sources
 
-### Financial Overview
+- **Industry Sponsorship:** Grants and funding from LexisNexis Risk Solutions for infrastructure and student stipends.
+- **Research Grants:** Project-specific funding from government bodies (DST, VGST, etc.) for impactful research.
+- **Internship Stipends:** Financial support for selected student interns (e.g., HPCC Systems Summer Internship Program).
+- **Consultancy Revenue:** Income generated from technical consultancy and training programs.
 
-| Aspect | Details |
-|--------|---------|
-| **Business Model** | Project-based, Retainer, and Dedicated Team models |
-| **Revenue Streams** | Software Development, SaaS Subscriptions, Consulting, Staff Augmentation |
-| **Pricing Strategy** | Competitive pricing with value-driven deliverables |
-| **Investment Focus** | Technology R&D, Talent Acquisition, Infrastructure |
+### Resource Allocation
 
-### Growth Indicators
-
-- Consistent year-over-year growth since inception in 2016
-- Expanding client base across domestic and international markets
-- Increasing investment in emerging technologies (AI, ML, IoT)
-- Growing portfolio of successful project deliveries
-
-*Note: Specific financial figures are proprietary and confidential.*
+- **Infrastructure:** High-performance computing clusters and lab equipment.
+- **Research Support:** Funding for conference travels, paper publications, and patent filings.
+- **Student Support:** Stipends and awards for hackathon winners and top performers.
 
 ---
 
 ## 1.6 Manpower
 
-### Team Composition
+### Leadership Team
 
-Invincible IT Services maintains a skilled workforce of software professionals:
+- **Dr. G Shobha:** Professor, CSE & Key Coordinator.
+- **Dr. Shanta Rangaswamy:** Professor & Co-Coordinator.
+- **Dr. Jyoti Shetty:** Associate Professor & Mentor (HPCC Community Awardee).
 
-| Role Category | Description |
-|--------------|-------------|
-| **Senior Developers** | Experienced engineers with 5+ years in software development |
-| **Junior Developers** | Entry to mid-level developers contributing to project execution |
-| **Project Managers** | Professionals managing project timelines, resources, and client communication |
-| **Quality Assurance** | Testing specialists ensuring product quality and reliability |
-| **UI/UX Designers** | Design professionals creating intuitive user experiences |
-| **DevOps Engineers** | Infrastructure and deployment specialists |
-| **Interns** | Students gaining practical experience through structured programs |
+### Core Team
 
-### Technical Expertise
+- **Faculty Mentors:** Prof. Manonmani S, Dr. Manas M N, Dr. Sneha M, Dr. Smriti M.
+- **Research Scholars:** PhD scholars working on specialized outcomes.
 
-The team possesses expertise in:
+### Student Researchers
 
-**Backend Technologies:**
-- MVC.NET, ASP.NET Core
-- Node.js, Express.js
-- Python (Django, Flask, FastAPI)
-
-**Frontend Technologies:**
-- Angular.js, React.js, Vue.js
-- HTML5, CSS3, JavaScript/TypeScript
-
-**Mobile Development:**
-- Android (Kotlin, Java)
-- iOS (Swift)
-- Cross-platform (React Native, Flutter)
-
-**AI/ML Technologies:**
-- TensorFlow, PyTorch
-- Scikit-learn, Pandas, NumPy
-- Graph Neural Networks (DGL, PyG)
-
-### Talent Development
-
-- Structured internship programs for students
-- Continuous learning through training and certifications
-- Mentorship programs pairing junior developers with seniors
-- Participation in hackathons and technical challenges
+- **Interns:** Over 85+ students have completed internships.
+- **Ambassadors:** Student leaders promoting HPCC Systems on campus.
+- **Project Teams:** Multidisciplinary teams working on semester-long projects.
 
 ---
 
 ## 1.7 Societal Concerns
 
-### Corporate Social Responsibility (CSR)
+The CoE is deeply committed to developing solutions that address societal challenges, aligning with the **Sustainable Development Goals (SDGs)**.
 
-Invincible IT Services demonstrates commitment to societal well-being through:
+### Key Initiatives
 
-#### Education Initiatives
-- **Internship Programs:** Providing students with hands-on industry experience
-- **Knowledge Sharing:** Conducting workshops and technical sessions
-- **Skill Development:** Training programs for aspiring developers
-- **Academic Collaboration:** Partnerships with universities for research projects
+#### Sustainable Solutions (SDG 11)
+- **Water Management:** Projects analysing water quality to ensure safe drinking water access.
+- **Pollution Control:** Monitoring environmental data to predict and mitigate pollution levels.
 
-#### Environmental Responsibility
-- **Digital Operations:** Minimizing paper usage through digital workflows
-- **Energy Efficiency:** Adoption of energy-efficient computing practices
-- **Remote Work:** Supporting work-from-home options to reduce commute emissions
-- **Cloud Computing:** Leveraging energy-efficient cloud infrastructure
+#### Industry & Innovation (SDG 9)
+- **Open Source:** Promoting free and open access to powerful big data tools for researchers globally.
+- **Assistive Technology:** Developing AI tools to aid differently-abled individuals.
 
-#### Ethical Technology Development
-- **Data Privacy:** Strict adherence to data protection regulations
-- **Security Best Practices:** Building secure software to protect user data
-- **Responsible AI:** Ethical considerations in AI/ML development
-- **Fraud Prevention:** Developing solutions (like this internship project) to combat financial fraud
-
-#### Community Engagement
-- Contributing to open-source projects
-- Mentoring aspiring developers
-- Supporting local tech communities and meetups
+#### Education & Partnership (SDG 17)
+- **Knowledge Sharing:** Free workshops and webinars used to democratize access to Big Data education.
+- **Community Building:** Creating a global network of student developers and researchers.
 
 ---
 
 ## 1.8 Professional Practices
 
-### Development Methodology
+### Research Methodology
+- **Literature Survey:** Rigorous review of existing IEEE/ACM papers before project initiation.
+- **Reproducibility:** Emphasis on creating open-source code repositories (GitHub) for reproducible research.
+- **Peer Review:** Regular internal reviews by faculty mentors and external reviews by industry experts.
 
-Invincible IT Services follows industry-standard professional practices:
-
-#### Agile Development
-- **Scrum Framework:** Sprint-based development cycles
-- **Daily Standups:** Regular team synchronization meetings
-- **Sprint Reviews:** Iterative client feedback and demonstrations
-- **Retrospectives:** Continuous process improvement
-
-#### Quality Assurance
-| Practice | Description |
-|----------|-------------|
-| **Code Reviews** | Peer review of all code changes before merge |
-| **Automated Testing** | Unit tests, integration tests, and end-to-end testing |
-| **CI/CD Pipelines** | Continuous integration and deployment automation |
-| **Documentation** | Comprehensive technical and user documentation |
-
-#### Security Practices
-- Secure coding guidelines and training
-- Regular security audits and vulnerability assessments
-- Data encryption and secure communication protocols
-- Compliance with industry security standards
-
-#### Project Management
-- **Version Control:** Git-based source code management
-- **Issue Tracking:** Systematic bug and feature tracking
-- **Documentation:** Confluence/Wiki for project documentation
-- **Communication:** Slack/Teams for team collaboration
-
-#### Professional Standards
-- Adherence to coding standards and best practices
-- Regular knowledge sharing sessions
-- Continuous learning and skill development
-- Client-centric approach with transparent communication
+### Development Standards
+- **Agile Research:** Iterative development of research prototypes with regular feedback loops.
+- **Code Quality:** Adhering to ECL and Python coding standards for maintainability.
+- **Ethics:** Strict adherence to data privacy and ethical AI principles, especially in healthcare and financial projects.
 
 ---
 
@@ -315,114 +207,52 @@ Invincible IT Services follows industry-standard professional practices:
 
 ## 2.1 Department Overview
 
-The **Research & Development (R&D) / AI Solutions Department** at Invincible IT Services is where the internship was conducted. This department focuses on developing cutting-edge AI and machine learning solutions for real-world business problems.
+The **Centre of Excellence in Cognitive Intelligent Systems for Sustainable Solutions (CISSS)** operates within the Department of Computer Science and Engineering at RVCE. It serves as a hub for innovation, bridging the gap between academic theory and industrial big data challenges.
 
-### Department Mission
+**Focus Areas:**
+- Big Data Analytics (HPCC Systems Platform)
+- Cognitive Intelligent Systems
+- Artificial Intelligence & Machine Learning
+- Edge Computing & IoT
 
-To research, develop, and implement innovative AI/ML solutions that address complex business challenges, with a particular focus on:
-- Financial technology and fraud detection
-- Predictive analytics and decision support systems
-- Graph-based machine learning solutions
-- Natural Language Processing applications
-
----
-
-## 2.2 Key Activities of the Department
+## 2.2 Key Activities
 
 ### 2.2.1 Research and Development
+The core activity of the CoE is R&D. Faculty and students work together to:
+- Formulate research problems based on societal needs.
+- Design cognitive models using GNNs, CNNs, and Transformers.
+- Validate models using large-scale datasets on HPCC Systems clusters.
 
-| Activity | Description |
-|----------|-------------|
-| **Literature Review** | Continuous study of latest research papers in AI/ML |
-| **Algorithm Development** | Implementation of state-of-the-art machine learning algorithms |
-| **Prototype Development** | Building proof-of-concept solutions for new ideas |
-| **Technology Evaluation** | Assessing new frameworks, libraries, and tools |
+### 2.2.2 Workshops and Training
+The CoE regularly organizes technical training:
+- **Big Data Analytics Workshops:** Hands-on sessions on ECL programming.
+- **NLP++ Workshops:** specialized sessions on Natural Language Processing.
+- **Virtual Summits:** Participation in HPCC Systems Community Days to present posters and papers.
 
-### 2.2.2 AI/ML Solution Development
+### 2.2.3 Hackathons and Contests
+- **Ctrl+Alt+Compete:** A flagship national-level hackathon offering a platform for students to solving problems in Sustainability, AI, and Robotics.
+- **Poster Contests:** Over 60+ students have participated and won awards at global HPCC Systems summits.
 
-The department specializes in developing AI-powered solutions:
-
-**Fraud Detection Systems:**
-- Graph Neural Network-based fraud detection (focus of internship project)
-- Anomaly detection for financial transactions
-- Real-time transaction monitoring systems
-- Risk scoring and assessment models
-
-**Predictive Analytics:**
-- Customer behavior prediction models
-- Demand forecasting systems
-- Risk assessment algorithms
-- Trend analysis and pattern recognition
-
-**Natural Language Processing:**
-- Text classification and sentiment analysis
-- Chatbot and conversational AI development
-- Document processing and extraction
-
-### 2.2.3 Data Engineering
-
-| Activity | Description |
-|----------|-------------|
-| **Data Pipeline Development** | Building ETL pipelines for data processing |
-| **Feature Engineering** | Creating meaningful features from raw data |
-| **Data Quality Assurance** | Ensuring data accuracy and consistency |
-| **Database Management** | Managing structured and unstructured data stores |
-
-### 2.2.4 Model Training and Deployment
-
-The department handles complete ML lifecycle:
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│    Data     │───▶│   Feature   │───▶│   Model     │───▶│   Model     │
-│ Collection  │    │ Engineering │    │  Training   │    │ Evaluation  │
-└─────────────┘    └─────────────┘    └─────────────┘    └──────┬──────┘
-                                                                │
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐          │
-│  Monitoring │◀───│ Deployment  │◀───│Optimization │◀─────────┘
-│  & Updates  │    │             │    │             │
-└─────────────┘    └─────────────┘    └─────────────┘
-```
-
-### 2.2.5 Dashboard and Visualization Development
-
-- **Streamlit Applications:** Interactive dashboards for ML model inference
-- **Data Visualization:** Charts, graphs, and visual analytics
-- **Real-time Monitoring:** Live dashboards for system metrics
-- **User Interfaces:** Building intuitive interfaces for ML applications
-
-### 2.2.6 Technical Documentation
-
-The department maintains comprehensive documentation:
-- Model architecture documentation
-- API documentation for ML services
-- Code documentation and comments
-- User guides and tutorials
-- Research findings and reports
+### 2.2.4 Publications and Patents
+- Publishing research findings in reputed Scopus/Web of Science indexed journals.
+- Filing patents for novel algorithms and systems developed within the CoE.
 
 ---
 
-## 2.3 Technologies Used by the Department
+## 2.3 Technologies Deployed
 
-### Programming Languages and Frameworks
+The CoE leverages a specialized technology stack centered around High-Performance Computing:
 
-| Category | Technologies |
-|----------|-------------|
-| **Languages** | Python, JavaScript, SQL |
-| **ML Frameworks** | PyTorch, TensorFlow, Scikit-learn |
-| **Graph ML** | DGL (Deep Graph Library), PyTorch Geometric |
-| **Web Frameworks** | Streamlit, Flask, FastAPI |
-| **Data Processing** | Pandas, NumPy, Dask |
+### Core Platform
+- **HPCC Systems:** An open-source, data-intensive supercomputing platform.
+    - **Thor:** Data refinery cluster for massive data processing.
+    - **Roxie:** Rapid data delivery cluster for real-time queries.
+    - **ECL (Enterprise Control Language):** The primary language for manipulating data on HPCC.
 
-### Development Tools
-
-| Category | Tools |
-|----------|-------|
-| **Version Control** | Git, GitHub |
-| **IDE** | VS Code, PyCharm |
-| **Containerization** | Docker |
-| **Cloud Platforms** | AWS, Google Cloud |
-| **Collaboration** | Slack, Microsoft Teams |
+### Machine Learning & AI
+- **GNN Tools:** DGL (Deep Graph Library), PyTorch Geometric.
+- **Deep Learning:** TensorFlow, PyTorch, Keras.
+- **Languages:** Python, C++, Java (for integration).
 
 ---
 
@@ -430,58 +260,35 @@ The department maintains comprehensive documentation:
 
 ### AntiFraud Project - Financial Fraud Detection
 
-The internship was part of the **AntiFraud** project, which aims to develop advanced fraud detection systems using Graph Neural Networks. The project encompasses:
+This internship was conducted under the "Financial Security and Anomaly Detection" research cluster of the CoE.
 
-**Project Objectives:**
-1. Implement state-of-the-art GNN models for fraud detection
-2. Develop feature engineering pipelines for transaction data
-3. Build interactive dashboards for fraud prediction
-4. Create comprehensive documentation for knowledge transfer
+**Project Context:**
+Financial fraud is a growing concern in the digital economy. Traditional rule-based systems often fail to detect complex, networked fraud patterns. This project leverages **Graph Neural Networks (GNNs)** to model entities (users, transactions) as graphs, enabling the detection of suspicious relationships and patterns that are invisible to standard analysis.
 
-**Models Developed:**
-| Model | Full Name | Key Feature |
-|-------|-----------|-------------|
-| GATE-Net | Graph Attention Temporal Embedding Network | 2D CNN + Temporal Attention |
-| GAP-Net | Gated Attention & Propagation Network | TransformerConv + Label Propagation |
-| STRA-GNN | Structural-Temporal Risk Attention GNN | Risk-Aware Neighbor Statistics |
+**Project Alignment:**
+This project aligns with the CoE's mission of "Cognitive Intelligent Systems" by creating a system that *learns* and *adapts* to new fraud tactics, rather than relying on static rules.
 
-**Project Deliverables:**
-- Trained models with benchmark performance metrics
-- Interactive Streamlit dashboard for fraud prediction
-- Comprehensive model documentation
-- GitHub repository with version-controlled code
+**Key Contributions during Internship:**
+- **Algorithm Development:** Implementation of GATE-Net, GAP-Net, and STRA-GNN models.
+- **Platform Integration:** Utilizing the CoE's computational resources for training complex GNNs.
+- **Tool Creation:** Developing a Streamlit-based dashboard for interactive fraud analysis, making the research accessible to non-experts.
 
 ---
 
-## 2.5 Department's Contribution to the Organization
+## 2.5 CoE's Contribution to the Ecosystem
 
-### Business Value Generation
+### Value to Students
+- **Real-world Exposure:** Working on industry-scale datasets and problems.
+- **Global Recognition:** Opportunities to present work at international summits in the USA/Europe (virtually or physically).
+- **Career Acceleration:** Direct pathways to internships and jobs at top tech firms.
 
-| Contribution | Impact |
-|--------------|--------|
-| **Fraud Prevention** | Helping clients reduce financial losses from fraud |
-| **Competitive Advantage** | Offering advanced AI capabilities to clients |
-| **Innovation** | Driving technological advancement within the organization |
-| **Knowledge Building** | Creating intellectual property and expertise |
-
-### Client Solutions
-
-The department's work enables Invincible IT Services to offer:
-- AI-powered fraud detection services
-- Custom ML solution development
-- Data analytics and insights
-- Predictive modeling capabilities
-
-### Talent Development
-
-- Providing structured internship opportunities
-- Mentoring junior developers in AI/ML
-- Building a skilled AI/ML team
-- Contributing to the company's technical expertise
+### Value to Society
+- **Open Innovation:** All tools and models are contributed back to the open-source community, allowing researchers worldwide to build upon this work.
+- **Sustainable Impact:** Projects focused on water, health, and security directly contribute to improving quality of life.
 
 ---
 
-*This document covers the organizational profile and department activities for the internship report.*
+*This document details the organizational profile of the HPCC Systems CoE at RVCE and the specific departmental activities relevant to the internship.*
 
 ---
 
