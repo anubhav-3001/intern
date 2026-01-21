@@ -70,7 +70,7 @@ I worked on understanding, implementing, and documenting three distinct graph ne
 **Key Implementation Tasks:**
 - Extended GAP-Net with 6 Risk-aware Neighbor Statistics features
 - Implemented 1D CNN (Tabular1DCNN2) for processing neighbor risk statistics
-- Built multi-head attention mechanism for risk aggregation (9 heads for S-FFSD dataset)
+- Built multi-head attention mechanism for risk aggregation (9 heads for financial fraud dataset)
 - Integrated neighbor features: degree, riskstat, 1hop_degree, 2hop_degree, 1hop_riskstat, 2hop_riskstat
 - Standardized neighbor features using StandardScaler
 
@@ -80,14 +80,14 @@ I worked on understanding, implementing, and documenting three distinct graph ne
 | Input Shape | (N, 133) - 127 temporal + 6 neighbor risk features |
 | Risk Features | 6 neighbor statistics at 1-hop and 2-hop levels |
 | CNN Module | 1D Convolution for risk statistics processing |
-| Risk Attention Heads | 9 heads for S-FFSD dataset |
+| Risk Attention Heads | 9 heads for financial fraud dataset |
 | Training | 3-fold cross-validation, 5 epochs |
 
 ### 3.1.3 Feature Engineering Pipeline Development
 
 Created a comprehensive feature engineering pipeline that processes raw transaction data:
 
-**Raw Dataset Fields (S-FFSD - 7 columns):**
+**Raw Dataset Fields (Financial Fraud Dataset - 7 columns):**
 - Time, Source, Target, Amount, Location, Type, Labels
 
 **Generated Features:**
@@ -134,7 +134,7 @@ Developed a comprehensive Streamlit dashboard for fraud detection inference:
 
 ### 3.1.6 Model Training and Evaluation
 
-Trained all three models on the S-FFSD (Simulated Financial Fraud Semi-supervised Dataset):
+Trained all three models on the financial fraud dataset:
 
 **Training Results:**
 | Model | AUC | F1-Score | Average Precision |
@@ -347,7 +347,7 @@ Key Achievements:
 1. Successfully implemented and documented three state-of-the-art fraud detection models
 2. Built an interactive dashboard for real-time fraud prediction
 3. Created comprehensive technical documentation for future reference
-4. Achieved competitive results on the S-FFSD benchmark dataset
+4. Achieved competitive results on the financial fraud benchmark dataset
 5. Gained proficiency in cutting-edge deep learning frameworks and techniques
 
 ---

@@ -15,7 +15,7 @@ The primary objective was to design, implement, and evaluate advanced deep learn
 3.  **Deployment:** creating an interactive dashboard to translate complex model outputs into actionable insights for fraud analysts.
 
 ### Methodology
-The project utilized the **S-FFSD** (Simulated Financial Fraud Semi-supervised Dataset) to train and model varying fraud scenarios. The technical approach involved:
+The project utilized the **financial fraud dataset** to train and model varying fraud scenarios. The technical approach involved:
 *   **Advanced Feature Engineering:** Transforming raw transaction logs into rich feature sets, including **2D temporal matrices** (capturing sequential behavior over time) and **Risk-aware Neighbor Statistics** (quantifying the risk level of a user's network).
 *   **Graph Construction:** Modeling transactions as nodes in a graph, connected by shared attributes (User ID, Location, Device), enabling the system to trace complex money flows.
 *   **Algorithm Implementation:**
